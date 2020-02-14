@@ -8,6 +8,7 @@ export class App extends Component {
     constructor(props){
         super(props);
         this.state = this.getCurrentStateFromStore();
+        this.gameStatus = {status:'incomplete',txtColor:{color:'#ff0000'}};
     }
 
     getCurrentStateFromStore() {
@@ -23,6 +24,14 @@ export class App extends Component {
 
         if (this.state !== currentState) {
             this.setState(currentState);
+            if(currentState.puzzle.state === 'solved' || currentState.puzzle.state === 'new_puzzle'){
+                this.gameStatus.status = 'Solved';
+                this.gameStatus.txtColor = {color:'#00ff00'};
+            }else{
+                this.gameStatus.status = 'In progress';
+                this.gameStatus.txtColor = {color:'#ff0000'};
+            }
+
         }
     };
 
@@ -46,6 +55,7 @@ export class App extends Component {
         }else if(display === display_states.puzzle_canvas){
             return <div>
                 <h1>Image Puzzle</h1>
+                <h2>Status: <span style={this.gameStatus.txtColor}>{this.gameStatus.status}</span></h2>
                 <Puzzle/>
             </div>
         }

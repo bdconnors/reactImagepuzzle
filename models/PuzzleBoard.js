@@ -10,8 +10,8 @@ export class PuzzleBoard{
         this.row = 0;
         this.positions = [];
         this.pieces = [];
-        this.selected_piece ='';
-        this.selected_target = '';
+        this.selected_piece =0;
+        this.selected_target = 0;
         this.correct_pieces = 0;
         this.incorrect_pieces = puzzle_config.positions;
     }
@@ -132,18 +132,22 @@ export class PuzzleBoard{
         return this.target;
     };
     move=()=>{
-        this.swap(this.selected,this.target);
+        this.swap(this.selected_piece,this.selected_target);
+        this.drawPiece(this.selected_target,false);
+        this.drawPiece(this.selected_piece,false);
     };
-    clearSelection=()=>{
-        let selected = this.selected;
-        this.selected = null;
-        return selected;
-    };
-    clearTarget=()=>{
-        let target = this.target;
-        this.target = null;
-        return target;
-    };
+    check(){
+        let correct = 0;
+        let incorrect = 0;
+        for(let i = 0; i < this.positions.length; i++){
+            if(this.positions[i].isCorrect()){
+                correct++;
+            }else{
+                incorrect++;
+            }
+        }
+        return {correct:correct,incorrect:incorrect};
+    }
 
     getByRange=(x,y)=>{
         let pos = this.positions.find((pos)=>{return pos.inRange(x,y) === true});

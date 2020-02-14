@@ -32,10 +32,10 @@ const initialState = {
         height: 0,
         positions:[],
         pieces:[],
-        selected_piece: '',
-        selected_target: '',
+        selected_piece: 0,
+        selected_target: 0,
         correct_pieces: 0,
-        incorrect_pieces:puzzle_config.positions
+        incorrect_pieces:0
     }
 };
 
@@ -56,28 +56,30 @@ export const reducer = (state = initialState, action)=>{
                 case shuffle:
                     state.puzzle.positions = action.payload.positions;
                     state.puzzle.pieces = action.payload.pieces;
-                    state.puzzle.correct_pieces = 0;
-                    state.puzzle.selected_piece = '';
-                    state.puzzle.selected_target = '';
+                    state.puzzle.correct_pieces = action.payload.correct_pieces;
+                    state.puzzle.incorrect_pieces = action.payload.incorrect_pieces;
+                    state.puzzle.selected_piece = 0;
+                    state.puzzle.selected_target = 0;
                     state.puzzle.state = in_progress;
                     console.log(state);
                     break;
                 case reset:
                     state.puzzle.positions = action.payload.positions;
                     state.puzzle.pieces = action.payload.pieces;
-                    state.puzzle.incorrect_pieces = puzzle_config.positions;
-                    state.puzzle.correct_pieces = 0;
-                    state.puzzle.selected_piece = '';
-                    state.puzzle.selected_target = '';
+                    state.puzzle.correct_pieces = 16;
+                    state.puzzle.incorrect_pieces = 0;
+                    state.puzzle.selected_piece = 0;
+                    state.puzzle.selected_target = 0;
                     state.puzzle.state = new_puzzle;
                     console.log(state);
                     break;
                 case select_piece:
-                    state.puzzle.selected_piece = action.payload;
+                    state.puzzle.selected_piece = action.payload.selected_piece;
                     state.puzzle.state = moving_piece;
+                    console.log(state);
                     break;
                 case select_target:
-                    state.puzzle.target = action.payload;
+                    state.puzzle.selected_target = action.payload.selected_target;
                     state.puzzle.state = piece_moved;
                     break;
                 case update_board:
@@ -87,6 +89,12 @@ export const reducer = (state = initialState, action)=>{
                     state.puzzle.selected_target = action.payload.selected_target;
                     state.puzzle.correct_pieces = action.payload.correct_pieces;
                     state.puzzle.incorrect_pieces = action.payload.incorrect_pieces;
+                    if(state.puzzle.incorrect_pieces === 0){
+                        state.puzzle.state = solved;
+                    }else {
+                        state.puzzle.state = in_progress;
+                    }
+                    console.log(state);
                     break;
                 default:
                     return state;

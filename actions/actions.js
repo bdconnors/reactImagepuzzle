@@ -19,15 +19,23 @@ export const updateBoard=(positions,pieces,sel_piece,sel_trgt,correct,incorrect)
         }
     };
 };
-export const shuffleBoard=(positions,pieces)=>{
+export const shuffleBoard=(positions,pieces,correct,incorrect)=>{
     return {
         type:'shuffle',
         payload:{
             positions:positions,
-            pieces:pieces
+            pieces:pieces,
+            correct_pieces: correct,
+            incorrect_pieces: incorrect
         }
 
     }
+};
+export const selectPiece=(piece)=>{
+    return{type:'select_piece',payload:{selected_piece:piece}};
+};
+export const selectTarget=(target)=>{
+    return{type:'select_target',payload:{selected_target:target}};
 };
 export const resetBoard=(positions,pieces)=>{
     return {

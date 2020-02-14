@@ -19,7 +19,8 @@ export const puzzle_actions = {
     shuffle:'shuffle',
     select_piece:'select_piece',
     select_target:'select_target',
-    update_board:'update_board'
+    update_board:'update_board',
+    solve_board:'solve_board'
 };
 export const display_states = {
     upload_form:'upload_form',

@@ -8,7 +8,6 @@ export class PuzzleBoardPosition{
         this.right = null;
         this.left = null;
         this.piece = piece;
-        this.correct = false;
     }
     inRange(x,y){
         let vertical = y >= this.top && y <= this.bottom;
@@ -39,11 +38,11 @@ export class PuzzleBoardPosition{
     getPiece(){
         return this.piece;
     }
-    check(){
+    isCorrect=()=>{
         let x = this.x === this.piece.imgX;
         let y = this.y === this.piece.imgY;
-        this.correct =  x && y;
-    }
+        return (x && y);
+    };
     toString(){
         return JSON.stringify(this);
     }
