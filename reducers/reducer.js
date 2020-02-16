@@ -1,9 +1,11 @@
 import {display_states,puzzle_config,puzzle_actions,puzzle_state} from '../constants/constants';
 import {createStore} from "redux";
+import uuid from 'react-uuid'
 
 //display states
 const upload_form = display_states.upload_form;
 const puzzle_canvas = display_states.puzzle_canvas;
+const sign_up = display_states.sign_up;
 
 //puzzle states
 const solved = puzzle_state.solved;
@@ -20,10 +22,12 @@ const generate = puzzle_actions.generate;
 const select_piece = puzzle_actions.select_piece;
 const select_target = puzzle_actions.select_target;
 const update_board = puzzle_actions.update_board;
+const puzzle_id = uuid();
 
 const initialState = {
-    display:upload_form,
+    display:sign_up,
     puzzle:{
+        id:puzzle_id,
         state:generating_board,
         col:puzzle_config.col,
         row:puzzle_config.row,

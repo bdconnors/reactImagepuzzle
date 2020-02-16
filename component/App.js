@@ -1,3 +1,4 @@
+import {Login} from './Login';
 import {ImageUpload} from './ImageUpload';
 import {Puzzle} from "./Puzzle";
 import {display_states} from "../constants/constants";
@@ -46,8 +47,11 @@ export class App extends Component {
 
     render() {
         const { display } = this.state;
-
-        if(display === display_states.upload_form) {
+        if(display === display_states.sign_up){
+            return <div>
+                <Login/>
+            </div>
+        }else if(display === display_states.upload_form) {
             return <div>
                 <h1>Image Puzzle</h1>
                 <ImageUpload/>

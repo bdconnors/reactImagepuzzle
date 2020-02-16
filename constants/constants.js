@@ -23,6 +23,7 @@ export const puzzle_actions = {
     solve_board:'solve_board'
 };
 export const display_states = {
+    sign_up:'sign_up',
     upload_form:'upload_form',
     puzzle_canvas:'puzzle_canvas'
 };
@@ -31,4 +32,9 @@ export const types = {
 };
 export const elements ={
     file_input:'file_input'
+};
+export const API = {
+    base:'http://localhost:3000/api/v1/',
+    login:'login',
+    users:'users'
 };
