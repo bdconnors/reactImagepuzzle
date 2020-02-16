@@ -12,8 +12,6 @@ export class PuzzleBoard{
         this.pieces = [];
         this.selected_piece =0;
         this.selected_target = 0;
-        this.correct_pieces = 0;
-        this.incorrect_pieces = puzzle_config.positions;
     }
 
     createBoard=()=>{
