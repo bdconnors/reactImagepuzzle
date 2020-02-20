@@ -1,5 +1,7 @@
 import React from "react";
 import {RailsAPI} from "./RailsAPI";
+import { Base64 } from 'js-base64';
+
 const api = new RailsAPI();
 export class Login extends React.Component {
     state = {
@@ -19,6 +21,16 @@ export class Login extends React.Component {
         api.login(this.state.email,this.state.password).then((result)=>{
             localStorage.setItem('token',result.token);
             console.log(localStorage.getItem('token'));
+            let split = result.token.split('.');
+            let head = split[0];
+            let payload =split[1];
+            let signature = split[2];
+            console.log('head');
+            console.log(Base64.decode(head));
+            console.log('payload');
+            console.log(JSON.parse(Base64.decode(payload)));
+            console.log('signature');
+            console.log(Base64.decode(signature));
         });
 
     };
