@@ -1,8 +1,5 @@
 import {state_props,display_states,} from "../constants/constants";
 
-export const setDisplay=(id)=>{
-    return {type:'display',payload:id};
-};
 export const setPuzzleBoard=(src,width,height)=>{
     return {type:'generate',payload:{img:src,width:width,height:height}};
 };

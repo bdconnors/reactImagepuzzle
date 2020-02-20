@@ -25,7 +25,8 @@ export const puzzle_actions = {
 export const display_states = {
     sign_up:'sign_up',
     upload_form:'upload_form',
-    puzzle_canvas:'puzzle_canvas'
+    puzzle_canvas:'puzzle_canvas',
+    puzzle_status:'puzzle_status'
 };
 export const types = {
     file:'file'

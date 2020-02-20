@@ -1,10 +1,11 @@
 import React from 'react';
 import {elements,types} from "../constants/constants";
-import {setDisplay,setPuzzleBoard} from "../actions/actions";
+import {setPuzzleBoard} from "../actions/actions";
 import {store} from "../reducers/reducer";
+import { useHistory } from "react-router-dom";
 
 
-export class ImageUpload extends React.Component {
+export class Upload extends React.Component {
     constructor(props) {
         super(props);
         this.uploadImg = this.uploadImg.bind(this);
@@ -12,23 +13,23 @@ export class ImageUpload extends React.Component {
 
     render() {
         return (<div>
+                <h1>Image Puzzle Upload</h1>
                 <input type={types.file} id={elements.file_input}/>
                 <br/>
                 <br/>
+
                 <button onClick={this.uploadImg}> Upload Image</button>
         </div>);
     }
 
     uploadImg=(e)=>{
-        console.log(this);
+
         const dispatch = store.dispatch;
         let input = document.getElementById(elements.file_input);
         this.getImage(input.files[0]).then((image)=>{
-            console.log(image.height);
             dispatch(setPuzzleBoard(image.src,image.width,image.height));
-            dispatch(setDisplay('puzzle_canvas'));
+            this.props.history.push('/puzzle');
         }).catch((e)=>{console.log(e)});
-
 
     };
     getImage(file){

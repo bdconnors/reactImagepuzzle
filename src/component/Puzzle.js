@@ -1,8 +1,9 @@
 import React from 'react';
 import {store} from "../reducers/reducer";
 import {PuzzleBoard} from "../models/PuzzleBoard";
-import {display_states, puzzle_config, puzzle_state} from "../constants/constants";
-import {shuffleBoard, updateBoard,resetBoard,selectPiece,selectTarget} from '../actions/actions';
+import {display_states,puzzle_state} from "../constants/constants";
+import {resetBoard, selectPiece, selectTarget, shuffleBoard, updateBoard} from '../actions/actions';
+
 const board = new PuzzleBoard();
 export class Puzzle extends React.Component {
     constructor(props) {
@@ -15,14 +16,12 @@ export class Puzzle extends React.Component {
     }
 
     getCurrentStateFromStore() {
-        const state = store.getState();
-        this.state = state.puzzle;
+        this.state = store.getState();
         return this.state;
     }
 
     updateStateFromStore = () => {
-        const state = this.getCurrentStateFromStore();
-        const currentState = state.puzzle;
+        const currentState = this.getCurrentStateFromStore();
         if (this.state !== currentState) {
             this.setState(currentState);
             if(this.state.state === puzzle_state.piece_moved){
@@ -94,10 +93,12 @@ export class Puzzle extends React.Component {
     render() {
         return (
             <div>
+                <h1>Image Puzzle</h1>
                 <button onClick={this.shuffle}>Shuffle</button>
                 <button onClick={this.reset}>Reset</button>
                 <br/>
                 <br/>
+                <h2 id={display_states.puzzle_status}></h2>
                 <canvas onClick={this.clickBoard} id={this.id} width={this.state.width} height={this.state.height}></canvas>
             </div>
         )
