@@ -17,7 +17,6 @@ export class Register extends React.Component {
             passErr:""
 
         };
-        this.err = React.createRef();
     }
 
 
@@ -32,6 +31,14 @@ export class Register extends React.Component {
         let validEmail = this.validateEmail();
         let validPass = this.validatePassword();
         let validName = this.validateName();
+        if(validEmail && validPass && validName){
+            api.register(this.state.firstName,this.state.lastName,this.state.email,this.state.password).then((user)=>{
+                localStorage.setItem('user',user);
+                this.props.history.push('/');
+            }).catch((e)=>{
+                console.log(e)
+            });
+        }
     };
     validateName = ()=>{
         let valid = false;

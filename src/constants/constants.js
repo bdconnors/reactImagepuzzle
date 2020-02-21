@@ -36,8 +36,8 @@ export const elements ={
 };
 export const API = {
     base:'http://localhost:3000/api/v1/',
-    login:'login',
-    users:'users'
+    users:'users',
+    login:'login'
 };
 export const REGEX = {
     email:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/

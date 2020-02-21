@@ -11,15 +11,22 @@ export class Upload extends React.Component {
         this.uploadImg = this.uploadImg.bind(this);
     }
 
+    componentDidMount() {
+        let isLoggedIn = localStorage.getItem('user');
+        if(!isLoggedIn){
+            this.props.history.push('/');
+        }
+    }
+
     render() {
         return (<div>
-                <h1>Image Puzzle Upload</h1>
-                <input type={types.file} id={elements.file_input}/>
-                <br/>
-                <br/>
-
-                <button onClick={this.uploadImg}> Upload Image</button>
+            <h1>Image Puzzle Upload</h1>
+            <input type={types.file} id={elements.file_input}/>
+            <br/>
+            <br/>
+            <button onClick={this.uploadImg}> Upload Image</button>
         </div>);
+
     }
 
     uploadImg=(e)=>{
