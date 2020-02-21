@@ -39,3 +39,6 @@ export const API = {
     login:'login',
     users:'users'
 };
+export const REGEX = {
+    email:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+};

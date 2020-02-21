@@ -5,16 +5,16 @@ import {store} from './reducers/reducer';
 import{Route,BrowserRouter} from 'react-router-dom';
 import {Upload} from "./component/Upload";
 import {Puzzle} from "./component/Puzzle";
-import {Login} from "./component/Login";
-import {SignUp} from "./component/SignUp";
+import {App} from "./component/App";
+import {Register} from "./component/Register";
 
 
 ReactDOM.render(
     <BrowserRouter>
     <Provider store={store}>
             <div>
-                <Route exact path="/" component={Login}/>
-                <Route exact path="/signup" component={SignUp}/>
+                <Route exact path="/" component={App}/>
+                <Route exact path="/register" component={Register}/>
                 <Route exact path="/upload" component={Upload}/>
                 <Route exact path="/puzzle" component={Puzzle}/>
             </div>

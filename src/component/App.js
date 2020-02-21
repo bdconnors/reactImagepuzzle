@@ -3,7 +3,7 @@ import {RailsAPI} from "./RailsAPI";
 import { Base64 } from 'js-base64';
 
 const api = new RailsAPI();
-export class Login extends React.Component {
+export class App extends React.Component {
     state = {
         email: "",
         password: "",
@@ -16,27 +16,18 @@ export class Login extends React.Component {
         });
     };
 
-    handleSubmit = event => {
+    login = event => {
         event.preventDefault();
         api.login(this.state.email,this.state.password).then((result)=>{
-            localStorage.setItem('token',result.token);
-            console.log(localStorage.getItem('token'));
-            let split = result.token.split('.');
-            let head = split[0];
-            let payload =split[1];
-            let signature = split[2];
-            console.log('head');
-            console.log(Base64.decode(head));
-            console.log('payload');
-            console.log(JSON.parse(Base64.decode(payload)));
-            console.log('signature');
-            console.log(Base64.decode(signature));
+            console.log(result);
         });
 
     };
-
+    signUp=event=>{
+        this.props.history.push('/register')
+    };
     render() {
-        return (<form onSubmit={this.handleSubmit}>
+        return (<div>
                 <h1>Image Puzzle Login</h1>
 
                 <label>E-Mail</label>
@@ -53,8 +44,10 @@ export class Login extends React.Component {
                     name='password'
                     placeholder='Password'
                     value={this.state.password}
-                    onChange={this.handleChange}/><br/>
-                    <input type="submit" value = "Login"/>
-        </form>)
+                    onChange={this.handleChange}/>
+                    <br/>
+                    <button onClick={this.login}>Login</button>
+                    <button onClick={this.signUp}>Sign Up</button>
+        </div>)
     }
 }
