@@ -1,6 +1,8 @@
 import React from "react";
 import {RailsAPI} from "./RailsAPI";
 import {REGEX} from "../constants/constants";
+import {store} from "../reducers/reducer";
+import {login} from "../actions/actions";
 const api = new RailsAPI();
 export class Register extends React.Component {
     constructor(props){
@@ -32,8 +34,9 @@ export class Register extends React.Component {
         let validPass = this.validatePassword();
         let validName = this.validateName();
         if(validEmail && validPass && validName){
-            api.register(this.state.firstName,this.state.lastName,this.state.email,this.state.password).then((user)=>{
-                localStorage.setItem('user',user);
+            api.register(this.state.firstName,this.state.lastName,this.state.email,this.state.password).then((res)=>{
+                const dispatch = store.dispatch;
+                dispatch(login(res.result));
                 this.props.history.push('/');
             }).catch((e)=>{
                 console.log(e)

@@ -1,97 +1,46 @@
-import {display_states,puzzle_config,puzzle_actions,puzzle_state} from '../constants/constants';
+import {_ACTION, _CONFIG} from '../constants/constants';
 import {createStore} from "redux";
 import uuid from 'react-uuid'
-
-
-//puzzle states
-const solved = puzzle_state.solved;
-const in_progress = puzzle_state.in_progress;
-const moving_piece = puzzle_state.moving_piece;
-const piece_moved = puzzle_state.piece_moved;
-const new_puzzle = puzzle_state.new_puzzle;
-const generating_board = puzzle_state.generating_board;
-
-//puzzle actions
-const reset = puzzle_actions.reset;
-const shuffle = puzzle_actions.shuffle;
-const generate = puzzle_actions.generate;
-const select_piece = puzzle_actions.select_piece;
-const select_target = puzzle_actions.select_target;
-const update_board = puzzle_actions.update_board;
+import {Puzzle} from "../models/Puzzle";
+import {User} from "../models/User";
 const puzzle_id = uuid();
-
 const initialState = {
-    id:puzzle_id,
-    state:generating_board,
-    col:puzzle_config.col,
-    row:puzzle_config.row,
-    img: '',
-    width: 0,
-    height: 0,
-    positions:[],
-    pieces:[],
-    selected_piece: 0,
-    selected_target: 0,
-    correct_pieces: 0,
-    incorrect_pieces:0
+    user: new User(),
+    puzzle:  new Puzzle(puzzle_id)
 };
-
+let loggedIn = localStorage.getItem('user');
+let lastPuzzle = localStorage.getItem('puzzle');
+if(loggedIn){
+    initialState.user.revive(loggedIn);
+}
+if(lastPuzzle){
+    initialState.puzzle.revive(lastPuzzle);
+}
 export const reducer = (state = initialState, action)=>{
     console.log(state);
     if (typeof state !== 'undefined') {
             switch(action.type){
-                case 'display':
-                    state.display = action.payload;
+                case _ACTION.GENERATE:
+                    state.puzzle = new Puzzle(puzzle_id);
+                    state.puzzle.img = action.payload.image;
+                    state.puzzle.load(_CONFIG.COL,_CONFIG.ROW);
+                    save();
                     break;
-                case generate:
-                    state.img = action.payload.img;
-                    state.width  = action.payload.width;
-                    state.height = action.payload.height;
-                    state.state = new_puzzle;
-                    console.log(state);
+                case  _ACTION.SHUFFLE:
+                    state.puzzle.shuffle();
+                    save();
                     break;
-                case shuffle:
-                    state.positions = action.payload.positions;
-                    state.pieces = action.payload.pieces;
-                    state.correct_pieces = action.payload.correct_pieces;
-                    state.incorrect_pieces = action.payload.incorrect_pieces;
-                    state.selected_piece = 0;
-                    state.selected_target = 0;
-                    state.state = in_progress;
-                    console.log(state);
+                case  _ACTION.RESET:
+                    state.puzzle.reset();
+                    save();
                     break;
-                case reset:
-                    state.positions = action.payload.positions;
-                    state.pieces = action.payload.pieces;
-                    state.correct_pieces = 16;
-                    state.incorrect_pieces = 0;
-                    state.selected_piece = 0;
-                    state.selected_target = 0;
-                    state.state = new_puzzle;
-                    console.log(state);
+                case  _ACTION.SELECT:
+                    state.puzzle.select(action.payload.x,action.payload.y);
+                    save();
                     break;
-                case select_piece:
-                    state.selected_piece = action.payload.selected_piece;
-                    state.state = moving_piece;
-                    console.log(state);
-                    break;
-                case select_target:
-                    state.selected_target = action.payload.selected_target;
-                    state.state = piece_moved;
-                    break;
-                case update_board:
-                    state.positions = action.payload.positions;
-                    state.pieces = action.payload.pieces;
-                    state.selected_piece = action.payload.selected_piece;
-                    state.selected_target = action.payload.selected_target;
-                    state.correct_pieces = action.payload.correct_pieces;
-                    state.incorrect_pieces = action.payload.incorrect_pieces;
-                    if(state.incorrect_pieces === 0){
-                        state.state = solved;
-                    }else {
-                        state.state = in_progress;
-                    }
-                    console.log(state);
+                case  _ACTION.PLACE:
+                    state.puzzle.place(action.payload.x,action.payload.y);
+                    save();
                     break;
                 default:
                     return state;
@@ -100,5 +49,10 @@ export const reducer = (state = initialState, action)=>{
     }
     return state
 };
-
+function save(){
+    let state = initialState;
+    let saved = JSON.parse(JSON.stringify(state.puzzle));
+    saved.img = {src:state.puzzle.img.src,w:state.puzzle.img.width,h:state.puzzle.img.height};
+    localStorage.setItem('puzzle',JSON.stringify(saved));
+}
 export const store = createStore(reducer);

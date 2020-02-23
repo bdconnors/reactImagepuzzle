@@ -1,12 +1,12 @@
-export class PuzzleBoardPosition{
-    constructor(id = null,x = 0, y = 0,piece = null){
+export class Position{
+    constructor(id = 0,x = 0, y = 0,top = 0,bottom = 0,left = 0,right = 0,piece = null){
         this.id = id;
         this.x = x;
         this.y = y;
-        this.top = null;
-        this.bottom = null;
-        this.right = null;
-        this.left = null;
+        this.top = top;
+        this.bottom = bottom;
+        this.left = left;
+        this.right = right;
         this.piece = piece;
     }
     inRange(x,y){

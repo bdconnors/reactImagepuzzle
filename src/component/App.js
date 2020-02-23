@@ -1,6 +1,8 @@
 import React from "react";
 import {RailsAPI} from "./RailsAPI";
-import { Base64 } from 'js-base64';
+import {store} from "../reducers/reducer";
+import {login} from "../actions/actions";
+import {User} from "../models/User";
 
 const api = new RailsAPI();
 export class App extends React.Component {
@@ -10,12 +12,6 @@ export class App extends React.Component {
         loginErr:""
 
     };
-    componentDidMount() {
-        if(localStorage.getItem('user')){
-            this.props.history.push('/upload');
-        }
-    }
-
     handleChange = event => {
         this.setState({
             [event.target.name]: event.target.value
@@ -26,9 +22,11 @@ export class App extends React.Component {
         event.preventDefault();
         this.setState({loginErr:''});
         api.login(this.state.email,this.state.password).then((res)=>{
+            const dispatch = store.dispatch;
             if(res.result != false){
-                console.log(res);
-                localStorage.setItem('user',res.result);
+                let user = res.result;
+                let model = new User(user._id.$oid,user.email,user.firstName,user.lastName,user.puzzles);
+                localStorage.setItem('user',JSON.stringify(model));
                 this.props.history.push('/upload');
             }else{
                 this.setState({loginErr:'E-mail or password incorrect'});
