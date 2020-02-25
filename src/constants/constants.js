@@ -9,12 +9,11 @@ export const _ELEMENT={
     CANVAS:'canvas'
 };
 export const _ACTION = {
-    GENERATE:'generate',
-    RESET:'reset',
-    SHUFFLE:'shuffle',
-    SELECT:'select',
-    PLACE:'place',
-    LOGIN:'login'
+    LOGIN:0,
+    UPDATE:1,
+    NEW_PUZZLE:2,
+    ADD_IMAGES:3,
+    SELECT_PUZZLE:4
 };
 export const API = {
     base:'http://localhost:3000/api/v1/',

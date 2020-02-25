@@ -1,42 +1,47 @@
 import React from 'react';
-import {store} from "../reducers/reducer";
+import {appStore} from "../store/store";
 import {_CONFIG, _ELEMENT} from "../constants/constants";
-import {place,reset,select,shuffle} from '../actions/actions';
 import * as ReactDOM from "react-dom";
+import {Api} from "../util/Api";
+import {SessionManager} from "../util/SessionManager";
 
 export class Canvas extends React.Component {
     constructor(props) {
         super(props);
         this.id = _ELEMENT.CANVAS;
-        this.state = this.getCurrentStateFromStore();
-        this.shuffle = this.shuffle.bind(this);
-        this.reset = this.reset.bind(this);
-        this.clickBoard = this.clickBoard.bind(this);
+        this.update();
     }
-    getCurrentStateFromStore() {
-        this.state = store.getState();
-        return this.state;
-    }
-    updateStateFromStore = () => {
-        this.state = this.getCurrentStateFromStore();
-        console.log(this.state);
+    update=()=>{
+        this.state = appStore.getState();
     };
     componentDidMount() {
-        this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
-        console.log(this.state.user.id);
-        if(this.state.user.id === -1) {
-            this.props.history.push('/');
-        }else if(this.state.puzzle.img === null){
-            this.props.history.push('/upload');
-        }else{
-            console.log(this.state.puzzle);
-            console.log(ReactDOM.findDOMNode(this));
+        const sessionManager = new SessionManager();
+        sessionManager.start();
+        if(this.state.loggedIn()) {
             this.draw();
+        }else{
+            this.props.history.push('/login');
         }
     }
-    componentWillUnmount() {
-        this.unsubscribeStore();
+    render(){
+        const sessionManager = new SessionManager();
+        sessionManager.start();
+        if(!this.state.loggedIn()){
+            this.props.history.push('/login');
+            return(<div></div>);
+        }else {
+            return (
+                <div>
+                    <button>Shuffle</button>
+                    <button>Reset</button>
+                    <br/>
+                    <br/>
+                    <canvas id={this.id}></canvas>
+                </div>
+            );
+        }
     }
+
     getElement=()=>{
         const node = ReactDOM.findDOMNode(this);
         return node.querySelector('#'+this.id);
@@ -46,48 +51,54 @@ export class Canvas extends React.Component {
         return canvas.getContext(_CONFIG.CTX);
     };
     draw=()=>{
-        let puzzle = this.state.puzzle;
+        const puzzle = this.state.puzzle;
+        const image = this.state.puzzleImage.image;
+        console.log(puzzle);
+        let col = _CONFIG.COL;
+        let row = _CONFIG.ROW;
         let ctx = this.getContext();
-        ctx.canvas.width = puzzle.img.width;
-        ctx.canvas.height = puzzle.img.height;
+        ctx.canvas.width = puzzle.width;
+        ctx.canvas.height = puzzle.height;
         ctx.strokeStyle = _CONFIG.OUTLINE;
-        let w = puzzle.positionWidth();
-        let h = puzzle.positionHeight();
-        for(let i = 0; i < puzzle.board.size(); i++){
-            let pos = puzzle.board.getById(i);
-            ctx.drawImage(puzzle.img, pos.piece.imgX, pos.piece.imgY, w, h, pos.x, pos.y, w, h);
+        let w = puzzle.width/col;
+        let h = puzzle.height/row;
+        for(let i = 0; i < puzzle.grid.size(); i++){
+            let pos = puzzle.grid.getById(i);
+            ctx.drawImage(image, pos.piece.imgX, pos.piece.imgY, w, h, pos.x, pos.y, w, h);
             ctx.strokeRect(pos.x,pos.y,w,h);
         }
     };
     shuffle=()=>{
-        const dispatch = store.dispatch;
-        dispatch(shuffle());
+        this.state.puzzle.shuffle();
         this.draw();
+        const api = new Api();
+        api.updatePuzzles(this.state.user.id,this.state.user.puzzles).catch((e)=>{console.log(e)});
     };
     reset=()=>{
-        const dispatch = store.dispatch;
-        dispatch(reset());
+        this.state.puzzle.reset();
         this.draw();
+        const api = new Api();
+        api.updatePuzzles(this.state.user.id,this.state.user.puzzles).catch((e)=>{console.log(e)});
     };
+
     clickBoard=(e)=>{
-        if(this.state.puzzle !== this.state.puzzle.isSolved()) {
-            const dispatch = store.dispatch;
-            let rect = e.target.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            console.log(x,y);
-            if(!this.state.puzzle.selection){
-                dispatch(select(x,y));
-            }else{
-                dispatch(place(x,y));
-            }
+
+        let rect = e.target.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        if(this.state.puzzle.hasSelection()){
+            this.state.puzzle.place(x,y);
             this.draw();
+            const api = new Api();
+            api.updatePuzzles(this.state.user.id,this.state.user.puzzles).catch((e)=>{console.log(e)});
+        }else {
+            this.state.puzzle.select(x, y);
         }
     };
     render() {
         return (
             <div>
-                <h1>Image Puzzle</h1>
+                <h1>{this.state.name}</h1>
                 <button onClick={this.shuffle}>Shuffle</button>
                 <button onClick={this.reset}>Reset</button>
                 <br/>
@@ -97,4 +108,5 @@ export class Canvas extends React.Component {
         )
 
     }
+
 }

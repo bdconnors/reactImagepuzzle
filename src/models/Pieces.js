@@ -3,7 +3,6 @@ import {Section} from "./Section";
 export class Pieces{
     constructor(sections = []){
         this.sections = sections;
-
     }
     shuffle=()=>{
         this.sections.sort(() => Math.random() - 0.5);
@@ -21,9 +20,9 @@ export class Pieces{
             return piece.id === id;
         });
     };
-    generate=(image,columns,rows)=>{
-        let width = image.width / columns;
-        let height = image.height / rows;
+    generate=(imgW,imgH,columns,rows)=>{
+        const width = imgW/columns;
+        const height = imgH/rows;
         let id = 0;
         for(let i = 0; i < columns; i++){
             let y = height * i;

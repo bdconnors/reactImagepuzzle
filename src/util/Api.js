@@ -1,8 +1,7 @@
-import * as React from "react";
 import {API} from '../constants/constants';
-export class RailsAPI{
+export class Api{
     constructor() {}
-    login(email,password){
+    login=(email,password)=>{
         return new Promise((resolve,reject)=> {
             fetch(API.base + API.login, {
                 method: 'POST',
@@ -16,8 +15,8 @@ export class RailsAPI{
                     reject(err);
                 })
         });
-    }
-    register(firstName,lastName,email,password){
+    };
+    register=(firstName,lastName,email,password)=>{
         return new Promise((resolve,reject)=> {
             fetch(API.base + API.users, {
                 method: 'POST',
@@ -33,7 +32,20 @@ export class RailsAPI{
                 reject(err);
             })
         });
-    }
-
+    };
+    updatePuzzles=(userId,puzzles)=>{
+        let body = JSON.stringify(puzzles);
+        console.log(body);
+        return new Promise((resolve,reject)=> {
+            fetch(API.base + API.users+"/"+userId, {
+                method: 'PUT',
+                body: body
+            }).then((res) => {
+                resolve(res.json());
+            }).catch((err) => {
+                reject(err);
+            })
+        });
+    };
 
 }

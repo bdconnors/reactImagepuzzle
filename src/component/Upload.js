@@ -1,67 +1,66 @@
 import React from 'react';
-import {generate} from "../actions/actions";
-import {store} from "../reducers/reducer";
+import {newPuzzle} from "../actions/actions";
+import {appStore} from "../store/store";
+import {Api} from "../util/Api";
+import {ImageLoader} from "../util/ImageLoader";
+import {PuzzleBuilder} from "../util/PuzzleBuilder";
+import {PuzzleImage} from "../models/PuzzleImage";
+import {_CONFIG} from "../constants/constants";
+import {SessionManager} from "../util/SessionManager";
 
 export class Upload extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.getCurrentStateFromStore();
+        this.update();
         this.uploadImg = this.uploadImg.bind(this);
     }
-    getCurrentStateFromStore() {
-        this.state = store.getState();
+    update=()=> {
+        this.state = appStore.getState();
         return this.state;
-    }
-    componentDidMount() {
-        if(this.state.user.id === -1){
-            this.props.history.push('/');
-        }
-    }
-
-    updateStateFromStore = () => {
-        const currentState = this.getCurrentStateFromStore();
-        if (this.state !== currentState) {
-            this.setState(currentState);
-        }
-    };
-    handleChange = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
     };
     render() {
-        return (<div>
-            <h1>Image Puzzle Upload</h1>
-            <input type="file" id="file_input"/>
-            <br/>
-            <br/>
-            <button onClick={this.uploadImg}> Upload Image</button>
-        </div>);
+        const sessionManager = new SessionManager();
+        sessionManager.start();
+        if(!this.state.loggedIn()) {
+            this.props.history.push('/login');
+            return(<div></div>)
+        }else{
+            return (<div>
+                <h1>Create Puzzle</h1>
+                <label>Puzzle Name:</label>
+                <br/>
+                <input type="text" name="puzzle_name" id="puzzle_name"/>
+                <br/>
+                <br/>
+                <input type="file" id="file_input"/>
+                <br/>
+                <br/>
+                <button onClick={this.uploadImg}> Upload Image</button>
+            </div>);
+        }
 
     }
     uploadImg=(e)=>{
-
-        const dispatch = store.dispatch;
+        const dispatch = appStore.dispatch;
+        const api = new Api();
+        const imageLoader = new ImageLoader();
+        const puzzleBuilder = new PuzzleBuilder();
+        let name  = document.getElementById('puzzle_name').value;
         let input = document.getElementById('file_input');
-        this.getImage(input.files[0]).then((image)=>{
-            dispatch(generate(image));
-            this.props.history.push('/puzzle');
+        imageLoader.fromFile(input.files[0]).then((image)=>{
+            let puzzle = puzzleBuilder.make();
+            puzzle.name = name;
+            puzzle.width = image.width;
+            puzzle.height = image.height;
+            puzzle.src = image.src;
+            puzzle.load(_CONFIG.COL,_CONFIG.ROW);
+            dispatch(newPuzzle(puzzle,new PuzzleImage(puzzle.id,image)));
+            this.update();
+            api.updatePuzzles(this.state.user.id,this.state.user.puzzles).catch((e)=>{console.log(e)});
+            this.props.history.push('/');
         }).catch((e)=>{console.log(e)});
-
     };
-    getImage=(file)=>{
-        return new Promise((resolve,reject)=> {
-            let reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                let image = new Image();
-                image.src = reader.result;
-                image.onload=()=>{
-                    resolve(image);
-                }
-            };
-        });
-    }
+
 }
 
 

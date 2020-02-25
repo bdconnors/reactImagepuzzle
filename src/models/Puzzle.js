@@ -1,61 +1,48 @@
-import {Board} from "./Board";
-import {Pieces} from "./Pieces";
-
-export class Puzzle{
-    constructor(id = null,board = new Board,pieces = new Pieces(),img = null,selection = null){
+export class Puzzle {
+    constructor(id,name,width,height,src,grid,pieces) {
         this.id = id;
-        this.board = board;
+        this.name = name;
+        this.width = width;
+        this.height = height;
+        this.grid = grid;
         this.pieces = pieces;
-        this.img = img;
-        this.selection = selection;
+        this.src = src;
+        this.selection = null;
     }
-    select=(x,y)=>{
-        this.selection = this.board.select(x,y);
+
+    select = (x, y) => {
+        this.selection = this.grid.select(x, y);
     };
-    place=(x,y)=>{
-        this.board.place(this.selection,x,y);
-        this.board.update();
+    place = (x, y) => {
+        this.grid.place(this.selection, x, y);
+        this.grid.update();
         this.selection = null;
     };
-    shuffle=()=>{
+    shuffle = () => {
         this.pieces.shuffle();
-        this.board.setPieces(this.pieces);
-        this.board.update();
+        this.grid.setPieces(this.pieces);
+        this.grid.update();
     };
-    reset=()=>{
+    reset = () => {
         this.pieces.reset();
-        this.board.setPieces(this.pieces);
-        this.board.update();
+        this.grid.setPieces(this.pieces);
+        this.grid.update();
     };
-    load=(columns,rows)=>{
-        this.board.generate(this.img,columns,rows);
-        this.pieces.generate(this.img,columns,rows);
-        for(let i = 0; i < this.board.size(); i++){
-            let position = this.board.getById(i);
+    load = (columns, rows) => {
+        this.grid.generate(this.width,this.height, columns, rows);
+        this.pieces.generate(this.width,this.height,columns, rows);
+        for (let i = 0; i < this.grid.size(); i++) {
+            let position = this.grid.getById(i);
             let piece = this.pieces.get(i);
             position.setPiece(piece);
         }
-        this.board.update();
+        this.grid.update();
     };
-    isSolved=()=>{
-      return this.board.incorrect === 0;
+    isSolved = () => {
+        return this.grid.incorrect === 0;
     };
-    positionWidth=()=>{
-        return this.board.posWidth;
-    };
-    positionHeight=()=>{
-        return this.board.posHeight;
-    };
-    revive(json){
-        let obj = JSON.parse(json);
-        let board = new Board();
-        let pieces = new Pieces();
-        board.revive(obj.board);
-        pieces.revive(obj.pieces);
-        this.id = obj.id;
-        this.board = board;
-        this.pieces = pieces;
-        this.img = new Image(obj.img.width,obj.img.height);
-        this.img.src = obj.img.src;
+    hasSelection=()=>{
+        return this.selection !== null;
     }
 }
+

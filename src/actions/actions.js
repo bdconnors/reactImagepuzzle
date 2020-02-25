@@ -1,15 +1,15 @@
-export const generate=(image)=>{
-    return {type:'generate',payload:{image:image}};
+export const login=(user,images)=>{
+    return {type:0,payload:{user:user,images:images}};
 };
-export const shuffle=()=>{
-    return {type:'shuffle', payload:''}
+export const update=(user)=>{
+    return {type:1,payload:{user:user}};
 };
-export const select=(x,y)=>{
-    return{type:'select',payload:{x:x,y:y}};
+export const newPuzzle=(puzzle,image)=>{
+    return {type:2,payload:{puzzle:puzzle,image:image}};
 };
-export const place=(x,y)=>{
-    return{type:'place',payload:{x:x,y:y}};
+export const addImages=(images)=>{
+    return {type:3,payload:{images:images}}
 };
-export const reset=()=>{
-    return {type:'reset', payload:''}
+export const selectPuzzle=(id)=>{
+    return{type:4,payload:{id:id}};
 };

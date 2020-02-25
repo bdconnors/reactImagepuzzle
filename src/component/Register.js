@@ -1,9 +1,9 @@
 import React from "react";
-import {RailsAPI} from "./RailsAPI";
+import {Api} from "../util/Api";
 import {REGEX} from "../constants/constants";
-import {store} from "../reducers/reducer";
+import {appStore} from "../store/store";
+import {UserBuilder} from "../util/UserBuilder";
 import {login} from "../actions/actions";
-const api = new RailsAPI();
 export class Register extends React.Component {
     constructor(props){
         super(props);
@@ -33,15 +33,18 @@ export class Register extends React.Component {
         let validEmail = this.validateEmail();
         let validPass = this.validatePassword();
         let validName = this.validateName();
-        if(validEmail && validPass && validName){
+        if(validName && validEmail && validPass){
+            const dispatch = appStore.dispatch;
+            const userBuilder = new UserBuilder();
+            const api = new Api();
             api.register(this.state.firstName,this.state.lastName,this.state.email,this.state.password).then((res)=>{
-                const dispatch = store.dispatch;
-                dispatch(login(res.result));
+                let user = userBuilder.revive(res);
+                dispatch(login(user));
                 this.props.history.push('/');
-            }).catch((e)=>{
-                console.log(e)
+
             });
         }
+
     };
     validateName = ()=>{
         let valid = false;

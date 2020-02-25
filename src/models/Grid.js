@@ -1,16 +1,10 @@
 import {Position} from "./Position";
-import {Section} from "./Section";
 
-class Piece {
-}
-
-export class Board{
-    constructor(positions = [],correct = -1,incorrect = -1){
+export class Grid{
+    constructor(positions,correct,incorrect){
         this.positions = positions;
         this.correct = correct;
         this.incorrect = incorrect;
-        this.posWidth = -1;
-        this.posHeight = -1;
     }
     select=(x,y)=>{
         let pos = this.get(x,y);
@@ -51,18 +45,18 @@ export class Board{
             this.set(i,pieces.sections[i]);
         }
     };
-    generate=(image,columns,rows)=>{
-        this.posWidth = image.width/columns;
-        this.posHeight = image.height/rows;
+    generate=(imgW,imgH,columns,rows)=>{
+        const posWidth = imgW/columns;
+        const posHeight = imgH/rows;
         let id = 0;
         for(let i = 0; i < columns; i++){
-            let y = this.posHeight * i;
+            let y = posHeight * i;
             for(let j = 0; j < rows; j++){
-                let x = this.posWidth * j;
+                let x = posWidth * j;
                 let top = y;
-                let bottom = top + this.posHeight;
+                let bottom = top + posHeight;
                 let left = x;
-                let right = left + this.posWidth;
+                let right = left + posWidth;
                 this.positions.push(this.make(id,x,y,top,bottom,left,right));
                 id++;
             }
@@ -87,21 +81,5 @@ export class Board{
         this.correct = correct;
         this.incorrect = incorrect;
     };
-    revive(obj){
-        console.log(obj);
-        this.correct = obj.correct;
-        this.incorrect = obj.incorrect;
-        this.posWidth = obj.posWidth;
-        this.posHeight = obj.posHeight;
-        console.log(obj.positions);
-        for(let i = 0; i < obj.positions.length; i++){
-            console.log(obj.positions[i]);
-            let raw = obj.positions[i];
-            console.log(raw);
-            let piece = new Section(raw.piece.id,raw.piece.imgX,raw.piece.imgY);
-            let pos = new Position(raw.id,raw.x,raw.y,raw.top,raw.bottom,raw.left,raw.right,piece);
-            this.positions.push(pos);
-        }
-    }
 
 }

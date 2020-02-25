@@ -1,24 +1,11 @@
 import React from "react";
 import {default as ReactDOM, render} from "react-dom";
-import { Provider } from "react-redux";
-import {store} from './reducers/reducer';
-import{Route,BrowserRouter} from 'react-router-dom';
-import {Upload} from "./component/Upload";
-import {Canvas} from "./component/Canvas";
+import{BrowserRouter} from 'react-router-dom';
 import {App} from "./component/App";
-import {Register} from "./component/Register";
-
 
 ReactDOM.render(
     <BrowserRouter>
-    <Provider store={store}>
-            <div>
-                <Route exact path="/" component={App}/>
-                <Route exact path="/register" component={Register}/>
-                <Route exact path="/upload" component={Upload}/>
-                <Route exact path="/puzzle" component={Canvas}/>
-            </div>
-        </Provider>,
+        <App/>
     </BrowserRouter>,
     document.getElementById('app')
 );
