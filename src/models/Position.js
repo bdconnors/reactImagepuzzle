@@ -39,9 +39,7 @@ export class Position{
         return this.piece;
     }
     isCorrect=()=>{
-        let x = this.x === this.piece.imgX;
-        let y = this.y === this.piece.imgY;
-        return (x && y);
+        return this.piece.id === this.id;
     };
     toString(){
         return JSON.stringify(this);

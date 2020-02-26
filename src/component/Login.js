@@ -1,46 +1,51 @@
 import React from "react";
 import {appStore} from "../store/store";
-import {Api} from "../util/Api";
-import {SessionManager} from "../util/SessionManager";
+import {api} from "./App";
+import {sessionManager} from "./App";
 
 export class Login extends React.Component {
     constructor(props){
         super(props);
-        this.update();
-        this.state = {
-            email: "",
-            password: "",
-            loginErr:""
-        }
+        this.state = appStore.getState();
+        this.state.loading = 'initial';
+
     };
-    update() {
-        this.storeState = appStore.getState();
-    }
+
     componentDidMount() {
-        this.update();
-        if(this.storeState.loggedIn()){
+        if(this.state.loggedIn === 'true') {
             this.props.history.push('/');
+        }else{
+            this.setState({loading:'true'});
+            sessionManager.checkSession().then((result) => {
+                this.setState({loading: 'false'});
+                if (result !== false) {
+                    this.setState({
+                        user: result.user,
+                        images: result.images,
+                        loggedIn:'true'
+                    });
+                    this.props.history.push('/');
+                }
+            });
         }
     }
-
-    handleChange = event => {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    };
-
     login = event => {
-        event.preventDefault();
-        this.setState({loginErr:''});
-        const api = new Api();
-        api.login(this.state.email,this.state.password).then((res)=>{
+        this.setState({err:''});
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        api.login(email,password).then((res)=>{
             console.log(res);
             if(res.result != -1) {
-                const sessionManager = new SessionManager();
-                sessionManager.newSession(res.result);
-                this.props.history.push('/');
+                sessionManager.createSession(res.result).then((result)=>{
+                    this.setState({
+                        user: result.user,
+                        images: result.images,
+                        loggedIn:'true'
+                    });
+                    this.props.history.push('/');
+                });
             }else{
-                this.setState({loginErr:'email or password incorrect'});
+                this.setState({err:'email or password incorrect'});
             }
 
         }).catch((e)=>{console.log(e)});
@@ -50,25 +55,23 @@ export class Login extends React.Component {
     };
 
     render() {
+        console.log(this.state);
+        if (this.state.loading === 'initial') {
+            console.log('This happens 2nd - after the class is constructed. You will not see this element because React is still computing changes to the DOM.');
+            return <h2>Intializing...</h2>;
+        } else if (this.state.loading === 'true') {
+            console.log('This happens 5th - when waiting for data.');
+            return <h2>Loading...</h2>;
+        }
             return (<div>
                 <h1>Image Puzzle Login</h1>
-                <span style={{color: 'red'}}>{this.state.loginErr}</span>
+                <span style={{color: 'red'}}>{this.state.err}</span>
                 <br/>
                 <label>E-Mail</label>
-                <input
-                    name='email'
-                    placeholder='example@domain.com'
-                    value={this.state.email}
-                    onChange={this.handleChange}
-                /><br/>
-
+                <input placeholder='example@domain.com' id="loginEmail"/>
+                <br/>
                 <label>Password</label>
-                <input
-                    type='password'
-                    name='password'
-                    placeholder='Password'
-                    value={this.state.password}
-                    onChange={this.handleChange}/>
+                <input type='password' placeholder='Password' id="loginPassword"/>
                 <br/>
                 <button onClick={this.login}>Login</button>
                 <button onClick={this.signUp}>Sign Up</button>

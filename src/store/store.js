@@ -3,3 +3,4 @@ import {createStore} from "redux";
 
 export const reducer = new AppReducer();
 export const appStore = createStore(reducer.reducer);
+export const dispatch = appStore.dispatch;

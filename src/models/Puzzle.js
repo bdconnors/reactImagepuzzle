@@ -7,16 +7,14 @@ export class Puzzle {
         this.grid = grid;
         this.pieces = pieces;
         this.src = src;
-        this.selection = null;
     }
 
     select = (x, y) => {
-        this.selection = this.grid.select(x, y);
+        return this.grid.select(x, y);
     };
-    place = (x, y) => {
-        this.grid.place(this.selection, x, y);
+    place = (id,x, y) => {
+        this.grid.place(id, x, y);
         this.grid.update();
-        this.selection = null;
     };
     shuffle = () => {
         this.pieces.shuffle();
@@ -41,8 +39,5 @@ export class Puzzle {
     isSolved = () => {
         return this.grid.incorrect === 0;
     };
-    hasSelection=()=>{
-        return this.selection !== null;
-    }
 }
 

@@ -1,67 +1,67 @@
 import React from 'react';
-import {newPuzzle} from "../actions/actions";
 import {appStore} from "../store/store";
-import {Api} from "../util/Api";
 import {ImageLoader} from "../util/ImageLoader";
 import {PuzzleBuilder} from "../util/PuzzleBuilder";
-import {PuzzleImage} from "../models/PuzzleImage";
 import {_CONFIG} from "../constants/constants";
-import {SessionManager} from "../util/SessionManager";
+import {sessionManager} from "./App";
+import {api} from "./App";
+import {PuzzleImage} from "../models/PuzzleImage";
+import {CreateButton} from "./CreateButton";
 
 export class Upload extends React.Component {
     constructor(props) {
         super(props);
-        this.update();
-        this.uploadImg = this.uploadImg.bind(this);
-    }
-    update=()=> {
         this.state = appStore.getState();
-        return this.state;
-    };
-    render() {
-        const sessionManager = new SessionManager();
-        sessionManager.start();
-        if(!this.state.loggedIn()) {
-            this.props.history.push('/login');
-            return(<div></div>)
-        }else{
-            return (<div>
-                <h1>Create Puzzle</h1>
-                <label>Puzzle Name:</label>
-                <br/>
-                <input type="text" name="puzzle_name" id="puzzle_name"/>
-                <br/>
-                <br/>
-                <input type="file" id="file_input"/>
-                <br/>
-                <br/>
-                <button onClick={this.uploadImg}> Upload Image</button>
-            </div>);
+        this.upload.bind(this);
+    }
+    componentDidMount() {
+        if(this.state.loggedIn === 'false') {
+            this.setState({loading:'true'});
+            sessionManager.checkSession().then((result) => {
+                this.setState({loading: 'false'});
+                if (result !== false) {
+                    this.setState({
+                        user: result.user,
+                        images: result.images,
+                        loggedIn:'true'
+                    });
+                }else{
+                    this.props.history.push('/login');
+                }
+            });
         }
+    }
+    render() {
+        console.log(this.state);
+        if (this.state.loading === 'initial') {
+            console.log('This happens 2nd - after the class is constructed. You will not see this element because React is still computing changes to the DOM.');
+            return <h2>Intializing...</h2>;
+        } else if (this.state.loading === 'true') {
+            console.log('This happens 5th - when waiting for data.');
+            return <h2>Loading...</h2>;
+        }
+        return <div>
+                <h1>Create Puzzle</h1>
+            <label>Puzzle Name:</label>
+            <br/>
+            <input type="text" name="puzzle_name" id="puzzle_name"/>
+            <br/>
+            <br/>
+            <input type="file" id="file_input"/>
+            <br/>
+            <br/>
+            <CreateButton upload={this.upload} user={this.state.user}/>
+        </div>;
 
     }
-    uploadImg=(e)=>{
-        const dispatch = appStore.dispatch;
-        const api = new Api();
-        const imageLoader = new ImageLoader();
-        const puzzleBuilder = new PuzzleBuilder();
-        let name  = document.getElementById('puzzle_name').value;
-        let input = document.getElementById('file_input');
-        imageLoader.fromFile(input.files[0]).then((image)=>{
-            let puzzle = puzzleBuilder.make();
-            puzzle.name = name;
-            puzzle.width = image.width;
-            puzzle.height = image.height;
-            puzzle.src = image.src;
-            puzzle.load(_CONFIG.COL,_CONFIG.ROW);
-            dispatch(newPuzzle(puzzle,new PuzzleImage(puzzle.id,image)));
-            this.update();
-            api.updatePuzzles(this.state.user.id,this.state.user.puzzles).catch((e)=>{console.log(e)});
-            this.props.history.push('/');
-        }).catch((e)=>{console.log(e)});
+    upload=(result)=>{
+        this.state.user.addPuzzle(result.puzzle);
+        this.state.images.push(result.puzzleImage);
+        this.setState({user:this.state.user,images:this.state.images});
+        sessionManager.updateSession(this.state.user);
+        this.props.history.push('/');
     };
 
 }
-
 
 

@@ -47,5 +47,16 @@ export class Api{
             })
         });
     };
+    getUser=(id)=>{
+        return new Promise((resolve,reject)=> {
+            fetch(API.base + API.users+"/"+id, {
+                method: 'GET'
+            }).then((res) => {
+                resolve(res.json());
+            }).catch((err) => {
+                reject(err);
+            })
+        });
+    };
 
 }

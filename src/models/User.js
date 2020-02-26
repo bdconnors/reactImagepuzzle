@@ -8,4 +8,10 @@ export class User{
         this.lastName = lastName;
         this.puzzles = puzzles;
     }
+    getPuzzle=(id)=>{
+        return this.puzzles.find((puzzle)=>{return puzzle.id === id});
+    };
+    addPuzzle=(puzzle)=>{
+        this.puzzles.push(puzzle);
+    };
 }

@@ -13,3 +13,6 @@ export const addImages=(images)=>{
 export const selectPuzzle=(id)=>{
     return{type:4,payload:{id:id}};
 };
+export const setLoading=(state)=>{
+    return {type:5,payload:{state:state}};
+};

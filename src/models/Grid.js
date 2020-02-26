@@ -1,20 +1,21 @@
 import {Position} from "./Position";
 
 export class Grid{
-    constructor(positions,correct,incorrect){
+    constructor(positions,incorrect,correct){
         this.positions = positions;
         this.correct = correct;
         this.incorrect = incorrect;
     }
     select=(x,y)=>{
-        let pos = this.get(x,y);
-        return pos.getPiece();
+        return  this.get(x,y);
     };
-    place=(piece,x,y)=>{
+    place=(id,x,y)=>{
         let target = this.get(x,y);
-        let selected = this.getByPiece(piece.id);
+        let selected = this.getByPieceId(id);
+        let piece = selected.piece;
         selected.setPiece(target.getPiece());
         target.setPiece(piece);
+        return target;
     };
     get=(x,y)=>{
         console.log(x,y);
@@ -29,7 +30,7 @@ export class Grid{
             return pos.id === id;
         });
     };
-    getByPiece=(id)=>{
+    getByPieceId=(id)=>{
         return this.positions.find((pos)=>{
             return pos.piece.id === id;
         });
@@ -71,13 +72,14 @@ export class Grid{
     update=()=>{
         let correct = 0;
         let incorrect = 0;
-        this.positions.forEach((pos)=>{
+        for(let i = 0; i < this.positions.length; i++){
+            let pos = this.positions[i];
             if(pos.isCorrect()){
                 correct++;
             }else{
                 incorrect++;
             }
-        });
+        }
         this.correct = correct;
         this.incorrect = incorrect;
     };

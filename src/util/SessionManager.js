@@ -1,46 +1,53 @@
 import {UserBuilder} from "./UserBuilder";
 import React from "react";
-import {appStore} from "../store/store";
-import {addImages, login} from "../actions/actions";
 import {ImageLoader} from "./ImageLoader";
+import {api} from "../component/App";
 
-export class SessionManager extends React.Component {
-    constructor(props){
-        super(props);
-        this.update();
-    }
-    start=()=>{
-        if(this.validSession() && !this.state.loggedIn()){
-            let user = this.getSessionUser();
-            this.login(user);
-        }
+export class SessionManager{
+    constructor(){}
+    checkSession=()=>{
+        return new Promise((resolve,reject)=>{
+            if(this.validSession()){
+                let user = this.getSessionUser();
+                this.login(user).then((res)=>{
+                    localStorage.setItem('user',JSON.stringify(res.user));
+                    resolve(res)
+                });
+            }else{
+                resolve(false);
+            }
+        });
     };
     login=(user)=>{
-        const dispatch = appStore.dispatch;
-        const puzzles = user.puzzles;
-        if(puzzles.length > 0) {
-            const dispatch = appStore.dispatch;
-            const imageLoader = new ImageLoader();
-            imageLoader.multiplePuzzles(puzzles).then((puzzleImages) => {
-                dispatch(login(user,puzzleImages));
+        return new Promise((resolve,reject)=>{
+            api.getUser(user.id).then((res)=>{
+                res.id = res._id.$oid;
+                const user = this.buildUser(res);
+                const puzzles = user.puzzles;
+                if(puzzles.length > 0) {
+                    const imageLoader = new ImageLoader();
+                    imageLoader.multiplePuzzles(puzzles).then((puzzleImages) => {
+                        resolve({user:user,images:puzzleImages});
+                    });
+                }else{
+                    resolve({user:user,images:[]});
+                }
             });
-        }else{
-            dispatch(login(user,[]));
-        }
+        });
     };
-    update(){
-        this.state = appStore.getState();
-    }
-    loadSession=()=>{
-        const user = this.getSessionUser();
-        this.login(user);
+    updateSession=(user)=>{
+        localStorage.setItem('user',JSON.stringify(user));
     };
-    newSession=(obj)=>{
-        obj.id = obj._id.$oid;
-        const user = this.buildUser(obj);
-        this.storeUser(user);
-        this.storeExpiration();
-        this.login(user);
+    createSession=(obj)=>{
+        return new Promise((resolve,reject)=> {
+            obj.id = obj._id.$oid;
+            const user = this.buildUser(obj);
+            this.storeUser(user);
+            this.storeExpiration();
+            this.login(user).then((user)=>{
+                resolve(user);
+            });
+        });
     };
     destroySession=()=>{
         localStorage.clear();

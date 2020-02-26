@@ -13,7 +13,8 @@ export const _ACTION = {
     UPDATE:1,
     NEW_PUZZLE:2,
     ADD_IMAGES:3,
-    SELECT_PUZZLE:4
+    SELECT_PUZZLE:4,
+    SET_LOADING:5
 };
 export const API = {
     base:'http://localhost:3000/api/v1/',

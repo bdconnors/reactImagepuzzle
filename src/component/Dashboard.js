@@ -1,26 +1,51 @@
 import * as React from "react";
 import {appStore} from "../store/store";
-import {SessionManager} from "../util/SessionManager";
-import {selectPuzzle} from "../actions/actions";
-const sessionManager = new SessionManager();
+import {login, selectPuzzle, setLoading} from "../actions/actions";
+import {sessionManager} from "./App";
+import {dispatch} from "../store/store";
+import {_CONFIG} from "../constants/constants";
 
 export class Dashboard extends React.Component{
 
     constructor(props){
         super(props);
-        this.update();
-
+        this.state = appStore.getState();
+        this.state.loading = 'initial';
     }
 
     update() {
-        this.state = appStore.getState();
+        this.setState(appStore.getState());
     }
     componentDidMount() {
-        this.setState(this.state);
-        console.log(this.state);
+        if(this.state.loggedIn === 'false') {
+            this.setState({loading:'true'});
+            sessionManager.checkSession().then((result) => {
+                this.setState({loading: 'false'});
+                if (result !== false) {
+                    this.setState({
+                        user: result.user,
+                        images: result.images,
+                        loggedIn:'true'
+                    });
+                } else {
+                    console.log(this.state);
+                    this.props.history.push('/login');
+                }
+
+                console.log(result);
+            });
+        }
     }
     render() {
-        if (this.state.loggedIn()) {
+        console.log(this.state);
+        if (this.state.loading === 'initial') {
+            console.log('This happens 2nd - after the class is constructed. You will not see this element because React is still computing changes to the DOM.');
+            return <h2>Intializing...</h2>;
+        } else if (this.state.loading === 'true') {
+            console.log('This happens 5th - when waiting for data.');
+            return <h2>Loading...</h2>;
+        }
+        if(this.state.loggedIn === 'true') {
             return <div>
                 <button onClick={() => {
                     this.props.history.push('/upload')
@@ -39,10 +64,9 @@ export class Dashboard extends React.Component{
                         let height = image.image.height * .5;
                         let src = image.image.src;
                         return <li key={puzzle.id}>
-                            <a onClick={()=>{
-                                const dispatch = appStore.dispatch;
-                                dispatch(selectPuzzle(puzzle.id));
-                                this.props.history.push('/puzzle/'+puzzle.id);
+                            <a onClick={() => {
+
+                                this.props.history.push('/puzzle/' + puzzle.id);
                             }}>
                                 <img src={src} width={width} height={height}/>
                                 <br/>
@@ -53,40 +77,11 @@ export class Dashboard extends React.Component{
                     })
                 }
                 </ul>
-                );
             </div>
-        }else{
-            this.props.history.push('/login');
-            return <div></div>;
         }
+        return <h2></h2>
+
+
     }
 
 }
-export const PuzzleList=(props)=>{
-    console.log(props);
-    if(props.user && props.images) {
-        return(<ul>{
-            props.user.puzzles.map((puzzle, i) => {
-                let image = props.images.find((image) => {
-                    return image.puzzleId === puzzle.id;
-                });
-                console.log(image);
-                console.log(puzzle);
-                let width = image.image.width * .5;
-                let height = image.image.height * .5;
-                let src = image.image.src;
-                return <li key={puzzle.id}>
-                    <a>
-                        <img src={src} width={width} height={height}/>
-                        <br/>
-                        {puzzle.name}
-                    </a>
-                    <br/>
-                </li>
-            })
-        }
-        </ul>);
-    }else{
-        return <ul></ul>;
-    }
-};
