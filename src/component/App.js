@@ -3,7 +3,7 @@ import {default as ReactDOM, render} from "react-dom";
 import { Provider } from "react-redux";
 import {Login} from "./Login";
 import {Register} from "./Register";
-import {Upload} from "./Upload";
+import {UploadForm} from "./upload/UploadForm";
 import {PuzzleBoard} from "./puzzle/PuzzleBoard";
 import {Dashboard} from "./Dashboard";
 import {Route} from "react-router-dom"
@@ -24,7 +24,7 @@ export class App extends React.Component{
                 <Route exact path="/" component={Dashboard}/>
                 <Route exact path="/login" component={Login}/>
                 <Route exact path="/register" component={Register}/>
-                <Route exact path="/upload" component={Upload}/>
+                <Route exact path="/upload" component={UploadForm}/>
                 <Route exact path="/puzzle/:id" component={PuzzleBoard}/>
         </Provider>);
     }

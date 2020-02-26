@@ -1,14 +1,14 @@
 import React from 'react';
-import {appStore} from "../store/store";
-import {ImageLoader} from "../util/ImageLoader";
-import {PuzzleBuilder} from "../util/PuzzleBuilder";
-import {_CONFIG} from "../constants/constants";
-import {sessionManager} from "./App";
-import {api} from "./App";
-import {PuzzleImage} from "../models/PuzzleImage";
+import {appStore} from "../../store/store";
+import {ImageLoader} from "../../util/ImageLoader";
+import {PuzzleBuilder} from "../../util/PuzzleBuilder";
+import {_CONFIG} from "../../constants/constants";
+import {sessionManager} from "../App";
+import {api} from "../App";
+import {PuzzleImage} from "../../models/PuzzleImage";
 import {CreateButton} from "./CreateButton";
 
-export class Upload extends React.Component {
+export class UploadForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = appStore.getState();

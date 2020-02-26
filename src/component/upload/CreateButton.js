@@ -1,9 +1,9 @@
 import * as React from "react";
-import {ImageLoader} from "../util/ImageLoader";
-import {PuzzleBuilder} from "../util/PuzzleBuilder";
-import {_CONFIG} from "../constants/constants";
-import {PuzzleImage} from "../models/PuzzleImage";
-import {api} from "./App";
+import {ImageLoader} from "../../util/ImageLoader";
+import {PuzzleBuilder} from "../../util/PuzzleBuilder";
+import {_CONFIG} from "../../constants/constants";
+import {PuzzleImage} from "../../models/PuzzleImage";
+import {api} from "../App";
 
 export class CreateButton extends React.Component{
     constructor(props){
